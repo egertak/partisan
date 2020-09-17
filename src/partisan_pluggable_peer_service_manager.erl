@@ -454,11 +454,11 @@ handle_call({remove_post_interposition_fun, Name}, _From, #state{post_interposit
 handle_call({update_members, Nodes}, 
             _From, 
             #state{membership=Membership}=State) ->
-    io:format("~nUpdating membership with: ~p~n", [Nodes]),
+    %%io:format("~nUpdating membership with: ~p~n", [Nodes]),
 
     %% Get the current membership.
     CurrentMembership = [N || #{name := N} <- Membership],
-    io:format("~nCurrentMembership: ~p~n", [CurrentMembership]),
+    %%io:format("~nCurrentMembership: ~p~n", [CurrentMembership]),
 
     %% need to support Nodes as a list of maps or atoms
     %% TODO: require each node to be a map
@@ -472,7 +472,7 @@ handle_call({update_members, Nodes},
     LeavingNodes = lists:filter(fun(N) ->
                                         not lists:member(N, NodesNames)
                                 end, CurrentMembership),
-    io:format("~nLeavingNodes: ~p~n", [LeavingNodes]),
+    %%io:format("~nLeavingNodes: ~p~n", [LeavingNodes]),
 
     %% Issue leaves.
     State1 = lists:foldl(fun(N, S) ->
@@ -492,7 +492,7 @@ handle_call({update_members, Nodes},
                                    (N) when is_atom(N) ->
                                         not lists:member(N, CurrentMembership)
                                 end, Nodes),
-    io:format("~nJoiningNodes: ~p~n", [JoiningNodes]),
+    %%io:format("~nJoiningNodes: ~p~n", [JoiningNodes]),
 
     %% Issue joins.
     State2=#state{pending=Pending} = lists:foldl(fun(N, S) ->
