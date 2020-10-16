@@ -454,11 +454,11 @@ handle_call({remove_post_interposition_fun, Name}, _From, #state{post_interposit
 handle_call({update_members, Nodes}, 
             _From, 
             #state{membership=Membership}=State) ->
-    %%io:format("~nUpdating membership with: ~p~n", [Nodes]),
+    % lager:debug("Updating membership with: ~p", [Nodes]),
 
     %% Get the current membership.
     CurrentMembership = [N || #{name := N} <- Membership],
-    %%io:format("~nCurrentMembership: ~p~n", [CurrentMembership]),
+    % lager:debug("CurrentMembership: ~p", [CurrentMembership]),
 
     %% need to support Nodes as a list of maps or atoms
     %% TODO: require each node to be a map
@@ -472,18 +472,18 @@ handle_call({update_members, Nodes},
     LeavingNodes = lists:filter(fun(N) ->
                                         not lists:member(N, NodesNames)
                                 end, CurrentMembership),
-    %%io:format("~nLeavingNodes: ~p~n", [LeavingNodes]),
+    % lager:debug("LeavingNodes: ~p", [LeavingNodes]),
 
     %% Issue leaves.
     State1 = lists:foldl(fun(N, S) ->
-                                 case N of
-                                   Map when is_map(Map) ->
+                             case N of
+                                 Map when is_map(Map) ->
                                      internal_leave(Map, S);
-                                   N when is_atom(N) ->
+                                 N when is_atom(N) ->
                                      %% find map based on name
                                      [Map] = lists:filter(fun(M) -> maps:get(name, M) == N end, Membership),
                                      internal_leave(Map, S)
-                                 end
+                             end
                          end, State, LeavingNodes),
 
     %% Compute joining list.
@@ -492,7 +492,7 @@ handle_call({update_members, Nodes},
                                    (N) when is_atom(N) ->
                                         not lists:member(N, CurrentMembership)
                                 end, Nodes),
-    %%io:format("~nJoiningNodes: ~p~n", [JoiningNodes]),
+    % lager:debug("JoiningNodes: ~p", [JoiningNodes]),
 
     %% Issue joins.
     State2=#state{pending=Pending} = lists:foldl(fun(N, S) ->
